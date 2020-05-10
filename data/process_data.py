@@ -4,9 +4,9 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 AP = argparse.ArgumentParser()
-AP.add_argument("--msgCSV", action="store", required=True, help="message CSV")
-AP.add_argument("--catCSV", action="store", required=True, help="category CSV")
-AP.add_argument("--dbFilename", action="store", required=True, help="db storage file name")
+AP.add_argument("--msgcsv", action="store", required=True, help="message CSV")
+AP.add_argument("--catcsv", action="store", required=True, help="category CSV")
+AP.add_argument("--dbfilename", action="store", required=True, help="db storage file name")
 dataPath = 'data/'
 
 
@@ -46,20 +46,20 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
-    engine = create_engine('sqlite:///{}{}.db'.format(dataPath, database_filename))
+    engine = create_engine('sqlite:///{}{}'.format(dataPath, database_filename))
     df.to_sql('DisasterResponse', engine, index=False, if_exists='replace')
 
 
 def main(args):
     print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
-              .format(args.msgCSV, args.catCSV))
-    loaddf = load_data(msgCsv=args.msgCSV, catCsv=args.catCSV)
+              .format(args.msgcsv, args.catcsv))
+    loaddf = load_data(msgCsv=args.msgcsv, catCsv=args.catcsv)
 
     print('Cleaning data...')
     cleandf = clean_data(loaddf)
 
-    print('Saving data...\n    DATABASE: {}'.format(args.dbFilename))
-    save_data(cleandf, args.dbFilename)
+    print('Saving data...\n    DATABASE: {}'.format(args.dbfilename))
+    save_data(cleandf, args.dbfilename)
     
 
 if __name__ == "__main__":

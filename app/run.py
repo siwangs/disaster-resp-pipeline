@@ -30,7 +30,7 @@ engine = create_engine('sqlite:///data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
-model = joblib.load("models/classifier.kpl")
+model = joblib.load("models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -42,7 +42,13 @@ def index():
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
+
+    top_cate_count= df.iloc[:,4:].sum().sort_values(ascending=False)[1:11]
+    top_cate_names = list(top_cate_count.index)
+
+    bottom_cate_count = df.iloc[:,4:].sum().sort_values(ascending=True)[1:11]
+    bottom_cate_names = list(bottom_cate_count.index)
+
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -61,6 +67,42 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=top_cate_names,
+                    y=top_cate_count
+                )
+            ],
+
+            'layout': {
+                'title': 'Top 10 Categories Count of Disasters',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories Names"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=bottom_cate_names,
+                    y=bottom_cate_count
+                )
+            ],
+
+            'layout': {
+                'title': 'Bottom 10 Categories Count of Disasters',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories Names"
                 }
             }
         }

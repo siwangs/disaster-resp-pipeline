@@ -24,8 +24,8 @@ from os import path
 
 
 AP = argparse.ArgumentParser()
-AP.add_argument("--sourceDB", action="store", required=True, help="source db path")
-AP.add_argument("--modelOutput", action="store", required=True, help="model output file name with path")
+AP.add_argument("--sourcedb", action="store", required=True, help="source db path")
+AP.add_argument("--modeloutput", action="store", required=True, help="model output file name with path")
 
 def directoryCheck(pathFile):
     if path.exists(pathFile):
@@ -94,8 +94,8 @@ def save_model(model, model_filepath):
 
 
 def main(args):
-    database_filepath = 'data/'+args.sourceDB
-    model_filepath = 'models/'+args.modelOutput
+    database_filepath = 'data/'+args.sourcedb
+    model_filepath = 'models/'+args.modeloutput
     directoryCheck(database_filepath)
 
     print('Loading data...\n    DATABASE: {}'.format(database_filepath))

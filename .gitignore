@@ -1,6 +1,0 @@
-.idea
-.gitignore
-.DS_Store
-classifier.kpl
-DisasterResponse.db
-models/classifier.kpl
