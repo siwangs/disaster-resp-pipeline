@@ -7,54 +7,59 @@ AP = argparse.ArgumentParser()
 AP.add_argument("--msgCSV", action="store", required=True, help="message CSV")
 AP.add_argument("--catCSV", action="store", required=True, help="category CSV")
 AP.add_argument("--dbFilename", action="store", required=True, help="db storage file name")
-dataPath = 'Data/'
+dataPath = 'data/'
+
 
 def directoryCheck(pathFile):
-    if(path.exists(pathFile)) == True:
+    if path.exists(pathFile):
         return pd.read_csv(pathFile)
     else:
         raise ValueError("The {} is not existing, please check the file name".format(pathFile))
-    
-def load_data(msgCsv,catCsv):
+
+
+def load_data(msgCsv, catCsv):
+    # Check if the file available
     msgDf = directoryCheck(dataPath+msgCsv)
     catDf = directoryCheck(dataPath+catCsv)
     
-    return msgDf.merge(catDf,on = "id")
+    return msgDf.merge(catDf,on = 'id')
+
 
 def clean_data(df):
-    cateDF = df['categories'].str.split(";", expand = True)
+    cateDF = df['categories'].str.split(";", expand=True)
     category_colnames = [c.split('-')[0] for c in cateDF.iloc[0,:].tolist()] 
     cateDF.columns = category_colnames
 
     for column in cateDF.columns:
-        # set each value to be the last character of the string
+        # Extract Value of Category Type
         cateDF[column] = cateDF[column].str[-1]
-        
-        # convert column from string to numeric
         cateDF[column] = cateDF[column].astype(int)
-
-    
-    df.drop("categories",axis=1, inplace = True)
-    df = pd.concat([df,cateDF], axis = 1)
+    # Clean abnormal data of Category Type (values other than 0 or 1)
+    for c in category_colnames:
+        if len(cateDF[c].unique()) == 3:
+            cateDF[c] = cateDF[c].map(lambda x: 1 if x >= 1 else 0)
+    # Drop duplicated value of Categories
+    df.drop("categories", axis=1, inplace=True)
+    df = pd.concat([df, cateDF], axis=1)
    
     return df.drop_duplicates()
 
+
 def save_data(df, database_filename):
-   engine = create_engine('sqlite:///{}{}.db'.format(dataPath,database_filename))
-   df.to_sql(dataPath+database_filename, engine, index=False,if_exists = 'replace') 
+    engine = create_engine('sqlite:///{}{}.db'.format(dataPath, database_filename))
+    df.to_sql('DisasterResponse', engine, index=False, if_exists='replace')
 
 
 def main(args):
     print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
               .format(args.msgCSV, args.catCSV))
-    loadDF = load_data(msgCsv=args.msgCSV, catCsv = args.catCSV)
+    loaddf = load_data(msgCsv=args.msgCSV, catCsv=args.catCSV)
 
     print('Cleaning data...')
-    cleanDF = clean_data(loadDF)
+    cleandf = clean_data(loaddf)
 
     print('Saving data...\n    DATABASE: {}'.format(args.dbFilename))
-    save_data(cleanDF, args.dbFilename)
-    
+    save_data(cleandf, args.dbFilename)
     
 
 if __name__ == "__main__":
