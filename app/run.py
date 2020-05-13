@@ -15,6 +15,13 @@ from sqlalchemy import create_engine
 app = Flask(__name__)
 
 def tokenize(text):
+    """Tokenize text (a disaster message).
+    Args:
+        text: String. A disaster message.
+    Returns:
+        html. rendered html webpage
+    """
+
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -37,6 +44,12 @@ model = joblib.load("models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
+    """Tokenize text (a disaster message).
+    Args: None
+
+    Returns:
+        list. It contains tokens.
+    """
     
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals

@@ -11,6 +11,14 @@ dataPath = 'data/'
 
 
 def directoryCheck(pathFile):
+
+    """ Load disaster messages and categories into dataframe.
+    Args:
+        pathFile: String. This for full path with file name of data source, raise value error if file/path is not existing.
+    Returns:
+       pandas.DataFrame
+    """
+
     if path.exists(pathFile):
         return pd.read_csv(pathFile)
     else:
@@ -18,6 +26,14 @@ def directoryCheck(pathFile):
 
 
 def load_data(msgCsv, catCsv):
+
+    """ Load disaster messages and categories into dataframe.
+    Args:
+        msgCsv: String. FileName of message csv taken from the Args
+        catCsv: String. FileName of label category csv taken from the Args
+    Returns:
+       merged pandas.DataFrame of message and category data
+    """
     # Check if the file available
     msgDf = directoryCheck(dataPath+msgCsv)
     catDf = directoryCheck(dataPath+catCsv)
@@ -26,6 +42,14 @@ def load_data(msgCsv, catCsv):
 
 
 def clean_data(df):
+
+    """Clean data.
+    Args:
+        df: pandas.DataFrame. it contains disaster messages and categories.
+    Return:
+        pandad.DataFrame
+    """
+
     cateDF = df['categories'].str.split(";", expand=True)
     category_colnames = [c.split('-')[0] for c in cateDF.iloc[0,:].tolist()] 
     cateDF.columns = category_colnames
@@ -46,6 +70,12 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """Save data into database.
+    Args:
+        df: pandas.DataFrame. It contains disaster messages and categories that are cleaned.
+        database_filename: String. Dataframe is saved into this database file.
+    """
+
     engine = create_engine('sqlite:///{}{}'.format(dataPath, database_filename))
     df.to_sql('DisasterResponse', engine, index=False, if_exists='replace')
 

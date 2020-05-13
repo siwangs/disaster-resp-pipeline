@@ -28,6 +28,13 @@ AP.add_argument("--sourcedb", action="store", required=True, help="source db pat
 AP.add_argument("--modeloutput", action="store", required=True, help="model output file name with path")
 
 def directoryCheck(pathFile):
+
+    """ Load disaster messages and categories into dataframe.
+    Args:
+        pathFile: String. This for full path with file name of data source, raise value error if file/path is not existing.
+    Returns:
+       pandas.DataFrame
+    """
     if path.exists(pathFile):
        pass
     else:
@@ -35,6 +42,16 @@ def directoryCheck(pathFile):
 
 
 def load_data(database_filepath):
+
+    """ Load disaster messages and categories into dataframe.
+    Args:
+        database_filepath: String. filepath for the cleaned database file
+    Returns:
+       X: pandas.series Disaster messages.
+       Y: pandas.Dataframe Disaster categories for each messages.
+       category_name: list. Disaster category names.
+    """
+
     engine = create_engine(f'sqlite:///{database_filepath}')
     df = pd.read_sql_table('DisasterResponse', con=engine)
 
@@ -46,6 +63,14 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+
+    """Tokenize text (a disaster message).
+    Args:
+        text: String. A disaster message.
+    Returns:
+        list. It contains tokens.
+    """
+
     # Normalized Text Keep Only lower case words and numbers
     text = re.sub(r"[^a-z0-9]", " ", text.lower())
 
@@ -60,6 +85,12 @@ def tokenize(text):
     return words
 
 def build_model():
+
+    """Build model.
+    Returns:
+        pipline: sklearn.model_selection.GridSearchCV. It contains a sklearn random forest estimator.
+    """
+
     random.seed(42)
     pipeline = Pipeline([('vect', CountVectorizer(tokenizer=tokenize)),
                          ('tfidf', TfidfTransformer()),
@@ -80,6 +111,15 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+
+    """Evaluate model
+    Args:
+        model: sklearn.model_selection.GridSearchCV.  It contains a sklearn random forest estimator.
+       X: pandas.series Disaster messages.
+       Y: pandas.Dataframe Disaster categories for each messages.
+        category_names: Disaster category names.
+    """
+
     y_pred = model.predict(X_test)
     for c, i in zip(category_names, range(len(category_names))):
         print(c,'\n',classification_report(Y_test[c], y_pred[:, i]))
@@ -89,6 +129,12 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """Save model
+    Args:
+        model: sklearn.model_selection.GridSearchCV.  It contains a sklearn random forest estimator.
+        model_filepath: String. Trained model saved to this filepath
+    """
+
     pickle.dump(model, open(model_filepath, 'wb'))
 
 
